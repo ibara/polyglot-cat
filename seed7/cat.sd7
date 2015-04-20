@@ -1,0 +1,73 @@
+
+(********************************************************************)
+(*                                                                  *)
+(*  cat.sd7       Concatenate and print files                       *)
+(*  Copyright (C) 2015  Brian Callahan                              *)
+(*                                                                  *)
+(*  This program is free software; you can redistribute it and/or   *)
+(*  modify it under the terms of the GNU General Public License as  *)
+(*  published by the Free Software Foundation; either version 2 of  *)
+(*  the License, or (at your option) any later version.             *)
+(*                                                                  *)
+(*  This program is distributed in the hope that it will be useful, *)
+(*  but WITHOUT ANY WARRANTY; without even the implied warranty of  *)
+(*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   *)
+(*  GNU General Public License for more details.                    *)
+(*                                                                  *)
+(*  You should have received a copy of the GNU General Public       *)
+(*  License along with this program; if not, write to the           *)
+(*  Free Software Foundation, Inc., 51 Franklin Street,             *)
+(*  Fifth Floor, Boston, MA  02110-1301, USA.                       *)
+(*                                                                  *)
+(********************************************************************)
+
+
+$ include "seed7_05.s7i";
+  include "stdio.s7i";
+  include "utf8.s7i";
+
+(* Open the file and print its contents.  Handle "-" as stdin.      *)
+(* You must rewind stdin in order to prevent `cat - -` from         *)
+(* quitting after receiving the first ^D.                           *)
+const proc: cat (in string: fileName) is func
+  local
+    var file: inFile is STD_NULL;
+    var boolean: done is FALSE;
+  begin
+    if fileName = "-" then
+      inFile := IN;
+      seek(IN, 1);
+    else
+      inFile := open(fileName, "rt");
+    end if;
+    if inFile <> STD_NULL then
+      while done <> TRUE do
+        inFile.bufferChar := getc(inFile);
+        if inFile.bufferChar <> EOF then
+          write(OUT, inFile.bufferChar);
+        else
+          done := TRUE;
+        end if;
+      end while;
+      if fileName <> "-" then
+        close(inFile);
+      end if;
+    else
+      writeln(" ***** " <& fileName <& " not found or able to be read");
+    end if;
+  end func;
+
+(* This is nearly a POSIX compatible cat.  The -u flag is missing.  *)
+const proc: main is func
+  local
+    var string: stri is "";
+  begin
+    OUT := STD_UTF8_OUT;
+    if length(argv(PROGRAM)) < 1 then
+      cat("-");
+    else
+      for stri range argv(PROGRAM) do
+        cat(stri);
+      end for;
+    end if;
+  end func;

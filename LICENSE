@@ -1,0 +1,10 @@
+Each implementation of cat has its own license header.
+Here is an aggregated list.
+
+GPLv2+
+------
+cat.sd7
+
+ISC
+---
+cat.c
