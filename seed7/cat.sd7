@@ -53,21 +53,32 @@ const proc: cat (in string: fileName) is func
         close(inFile);
       end if;
     else
-      writeln(" ***** " <& fileName <& " not found or able to be read");
+      writeln("cat: " <& fileName <& ": Not found or not readable");
     end if;
   end func;
 
-(* This is nearly a POSIX compatible cat.  The -u flag is missing.  *)
+(* This is a POSIX compatible cat.                                  *)
 const proc: main is func
   local
-    var string: stri is "";
+    var integer: index is 0;
   begin
     OUT := STD_UTF8_OUT;
     if length(argv(PROGRAM)) < 1 then
       cat("-");
+    elsif length(argv(PROGRAM)) = 1 and argv(PROGRAM)[1] = "-u" then
+      cat("-");
     else
-      for stri range argv(PROGRAM) do
-        cat(stri);
+      for index range 1 to length(argv(PROGRAM)) do
+        if index = 1 and argv(PROGRAM)[index][1] = '-' then
+          if argv(PROGRAM)[index] = "-" then
+            cat(argv(PROGRAM)[index]);
+          elsif argv(PROGRAM)[index] <> "-u" then
+            writeln("usage: cat [-u] [file ...]");
+            exit(1);
+          end if;
+        else
+          cat(argv(PROGRAM)[index]);
+        end if;
       end for;
     end if;
   end func;
