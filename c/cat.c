@@ -34,7 +34,7 @@ main(int argc, char *argv[])
 	while ((ch = getopt(argc, argv, "u")) != -1)
 		switch (ch) {
 		case 'u':
-			setbuf(stdout, NULL);
+			setvbuf(stdout, NULL, _IONBF, 0);
 			break;
 		default:
 			(void) fprintf(stderr, "usage: cat [-u] [file ...]\n");
@@ -54,10 +54,10 @@ main(int argc, char *argv[])
 	}
 
 	while (*argv) {
-		if ((strcmp(*argv, "-")) == 0) {
+		if ((strcmp(*argv++, "-")) == 0) {
 			while ((c = fgetc(stdin)) != EOF)
 				fputc(c, stdout);
-			*++argv;
+			clearerr(stdin);
 			continue;
 		}
 		if ((fp = fopen(*argv, "r")) == NULL) {

@@ -24,31 +24,27 @@
 
 $ include "seed7_05.s7i";
   include "stdio.s7i";
-  include "utf8.s7i";
 
-(* Open the file and print its contents.  Handle "-" as stdin.      *)
-(* You must rewind stdin in order to prevent `cat - -` from         *)
-(* quitting after receiving the first ^D.                           *)
+(**
+ *  Open the file and print its contents.  Handle "-" as stdin.
+ *)
 const proc: cat (in string: fileName) is func
   local
     var file: inFile is STD_NULL;
-    var boolean: done is FALSE;
+    var char: ch is ' ';
   begin
     if fileName = "-" then
       inFile := IN;
-      seek(IN, 1);
     else
-      inFile := open(fileName, "rt");
+      inFile := open(fileName, "r");
     end if;
     if inFile <> STD_NULL then
-      while done <> TRUE do
-        inFile.bufferChar := getc(inFile);
-        if inFile.bufferChar <> EOF then
-          write(OUT, inFile.bufferChar);
-        else
-          done := TRUE;
+      repeat
+        ch := getc(inFile);
+        if ch <> EOF then
+          write(OUT, ch);
         end if;
-      end while;
+      until ch = EOF;
       if fileName <> "-" then
         close(inFile);
       end if;
@@ -57,12 +53,13 @@ const proc: cat (in string: fileName) is func
     end if;
   end func;
 
-(* This is a POSIX compatible cat.                                  *)
+(**
+ *  This is a POSIX compatible cat.
+ *)
 const proc: main is func
   local
     var integer: index is 0;
   begin
-    OUT := STD_UTF8_OUT;
     if length(argv(PROGRAM)) < 1 then
       cat("-");
     elsif length(argv(PROGRAM)) = 1 and argv(PROGRAM)[1] = "-u" then
