@@ -60,9 +60,9 @@ main(int argc, char *argv[])
 
 	do {
 		if ((strcmp(*argv, "-")) == 0) {
+			clearerr(stdin);
 			while ((c = fgetc(stdin)) != EOF)
 				fputc(c, stdout);
-			clearerr(stdin);
 			continue;
 		}
 		if ((fp = fopen(*argv, "r")) == NULL) {
