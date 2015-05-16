@@ -16,6 +16,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,6 +28,8 @@ main(int argc, char *argv[])
 	FILE           *fp;
 	char 		c;
 	int 		ch;
+
+	setlocale(LC_ALL, "");
 
 	/*
 	 * POSIX only specifies a -u flag.
@@ -53,15 +56,15 @@ main(int argc, char *argv[])
 		goto out;
 	}
 
-	while (*argv) {
-		if ((strcmp(*argv++, "-")) == 0) {
+	do {
+		if ((strcmp(*argv, "-")) == 0) {
 			while ((c = fgetc(stdin)) != EOF)
 				fputc(c, stdout);
 			clearerr(stdin);
 			continue;
 		}
 		if ((fp = fopen(*argv, "r")) == NULL) {
-			(void) fprintf(stderr, "cat: %s: %s\n", *argv++, strerror(errno));
+			(void) fprintf(stderr, "cat: %s: %s\n", *argv, strerror(errno));
 			continue;
 		}
 
@@ -69,8 +72,7 @@ main(int argc, char *argv[])
 			fputc(c, stdout);
 
 		fclose(fp);
-		*++argv;
-	}
+	} while (*++argv);
 
 out:
 	return 0;
