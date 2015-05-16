@@ -25,11 +25,12 @@
 int
 main(int argc, char *argv[])
 {
-	FILE           *fp;
-	char 		c;
-	int 		ch;
+	FILE   *fp;
+	char 	c, *progname;
+	int 	ch;
 
 	setlocale(LC_ALL, "");
+	progname = *argv;
 
 	/*
 	 * POSIX only specifies a -u flag.
@@ -40,7 +41,8 @@ main(int argc, char *argv[])
 			setvbuf(stdout, NULL, _IONBF, 0);
 			break;
 		default:
-			(void) fprintf(stderr, "usage: cat [-u] [file ...]\n");
+			(void) fprintf(stderr, "usage: %s [-u] [file ...]\n",
+				       progname);
 			exit(1);
 			/* NOTREACHED */
 		}
@@ -64,7 +66,8 @@ main(int argc, char *argv[])
 			continue;
 		}
 		if ((fp = fopen(*argv, "r")) == NULL) {
-			(void) fprintf(stderr, "cat: %s: %s\n", *argv, strerror(errno));
+			(void) fprintf(stderr, "%s: %s: %s\n", progname, *argv,
+				       strerror(errno));
 			continue;
 		}
 
