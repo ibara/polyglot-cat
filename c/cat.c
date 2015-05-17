@@ -53,6 +53,7 @@ main(int argc, char *argv[])
 	 * Handle the case where no files are specified separately.
 	 */
 	if (argc < 1) {
+		clearerr(stdin);
 		while ((c = fgetc(stdin)) != EOF)
 			fputc(c, stdout);
 		goto out;
