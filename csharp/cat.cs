@@ -46,7 +46,7 @@ namespace cat {
 		/// <param name="args"></param>
 		public static void Main(string[] args) {
 			if (args.Length < 1) {
-				usage();
+				Usage();
 				return;
 			}
 
@@ -94,7 +94,7 @@ namespace cat {
 		/// <summary>
 		/// Print out the usage of this program.
 		/// </summary>
-		public static void usage() {
+		public static void Usage() {
 			Console.WriteLine("usage: cat [file ...]");
 		}
 	}
