@@ -65,23 +65,22 @@ namespace cat {
 				 * it will be disposed of properly.
 				 */
 				using (FileStream stream = File.OpenRead(filePath)) {
-					byte[] buff = new byte[1];
-					Encoding encoding = new ASCIIEncoding();
 					bool keepReadingFromFile = true;
+					int characterByte;
 
-					/* Read the contents of the file one byte at a time */
+					/* Read the contents of the file one byte at a time. */
 					do {
-						int c = stream.ReadByte();
+						characterByte = stream.ReadByte();
 
 						/* 
 						 * ReadByte() returns -1 when the end of the stream 
 						 * is reached.
 						 */
-						if (c < 0) {
+						if (characterByte < 0) {
 							keepReadingFromFile = false;
 						} else {
-							buff[0] = (byte) c;
-							Console.Write(encoding.GetChars(buff));
+							/* Print the character. */
+							Console.Write(char.ConvertFromUtf32(characterByte));
 						}
 					} while (keepReadingFromFile);
 				}
