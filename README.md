@@ -13,7 +13,7 @@ actually used. Additionally, it is sufficiently complex enough to have multiple
 ways of writing it within any particular language, allowing the new programmer
 to impart his or her own developing style to the code. Finally, cat has special
 conditions that require a little extra thought. A programmer could choose to
-omit the code for handling stdin for a simplified program.
+omit the code for handling stdin for a simplified program, for example.
 
 The aspiring programmer will have a program he or she will use on a regular
 basis.  That feeling of using what you make hopefully provides encouragement to
