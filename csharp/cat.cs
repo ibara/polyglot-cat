@@ -26,15 +26,14 @@
 
 using System;
 using System.IO;
-using System.Text;
 
 namespace cat {
 
 	/// <summary>
 	/// cat - A reimplimentation of the Unix utility in C#
 	/// 
-	/// This program takes a file as its argument and prints the contents 
-	/// to stdout.
+	/// This program takes a list of files as its arguments and prints the 
+	/// contents to stdout.
 	/// 
 	/// Note: This program is not POSIX compliant.
 	/// </summary>
@@ -50,43 +49,45 @@ namespace cat {
 				return;
 			}
 
-			string filePath = args[0];
+			foreach (string arg in args) {
+				try {
+					string filePath = arg;
 
-			if (!File.Exists(filePath)) {
-				Console.WriteLine(
-					string.Format("cat: {0} does not exist", filePath)
-				);
-				return;
-			}
+					if (!File.Exists(filePath)) {
+						Console.WriteLine(
+							string.Format("cat: {0} does not exist", filePath)
+						);
+						continue;
+					}
 
-			try {
-				/* 
-				 * Wrap the stream declaration in a using() statement so that 
-				 * it will be disposed of properly.
-				 */
-				using (FileStream stream = File.OpenRead(filePath)) {
-					bool keepReadingFromFile = true;
-					int characterByte;
+					/* 
+					 * Wrap the stream declaration in a using() statement so that 
+					 * it will be disposed of properly.
+					 */
+					using (FileStream stream = File.OpenRead(filePath)) {
+						bool keepReadingFromFile = true;
+						int characterByte;
 
-					/* Read the contents of the file one byte at a time. */
-					do {
-						characterByte = stream.ReadByte();
+						/* Read the contents of the file one byte at a time. */
+						do {
+							characterByte = stream.ReadByte();
 
-						/* 
-						 * ReadByte() returns -1 when the end of the stream 
-						 * is reached.
-						 */
-						if (characterByte < 0) {
-							keepReadingFromFile = false;
-						} else {
-							/* Print the character. */
-							Console.Write(char.ConvertFromUtf32(characterByte));
-						}
-					} while (keepReadingFromFile);
+							/* 
+							 * ReadByte() returns -1 when the end of the stream 
+							 * is reached.
+							 */
+							if (characterByte < 0) {
+								keepReadingFromFile = false;
+							} else {
+								/* Print the character. */
+								Console.Write(char.ConvertFromUtf32(characterByte));
+							}
+						} while (keepReadingFromFile);
+					}
 				}
-			}
-			catch (Exception e) {
-				Console.WriteLine("cat: Error: " + e.Message);
+				catch (Exception e) {
+					Console.WriteLine("cat: Error: " + e.Message);
+				}
 			}
 		}
 
