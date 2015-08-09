@@ -34,6 +34,7 @@ main(int argc, char *argv[])
 
 	/*
 	 * POSIX only specifies a -u flag.
+	 * This is a POSIX compliant cat.
 	 */
 	while ((ch = getopt(argc, argv, "u")) != -1)
 		switch (ch) {
