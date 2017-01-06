@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Brian Callahan <bcallah@openbsd.org>
+ * Copyright (c) 2015, 2017 Brian Callahan <bcallah@openbsd.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,6 +16,9 @@
 
 #include <cerrno>
 #include <iostream>
+#include <cstdlib>
+#include <cstring>
+#include <unistd.h>
 
 using namespace std;
 
@@ -23,14 +26,15 @@ int
 main(int argc, char *argv[])
 {
 	FILE   *fp;
-	char 	c, *progname;
-	int 	ch;
+	char   *progname;
+	int 	c, ch, ret = 0;
 
 	setlocale(LC_ALL, "");
 	progname = *argv;
 
 	/*
 	 * POSIX only specifies a -u flag.
+	 * This is a POSIX compliant cat.
 	 */
 	while ((ch = getopt(argc, argv, "u")) != -1)
 		switch (ch) {
@@ -45,31 +49,27 @@ main(int argc, char *argv[])
 	argc -= optind;
 	argv += optind;
 
-	/*
-	 * Handle the case where no files are specified separately.
-	 */
-	if (argc < 1) {
-		clearerr(stdin);
-		while ((c = fgetc(stdin)) != EOF)
-			cout << c;
-	} else do {
-		if ((strcmp(*argv, "-")) == 0) {
+	do {
+		if (argc == 0 || (strcmp(*argv, "-")) == 0) {
 			clearerr(stdin);
-			while ((c = fgetc(stdin)) != EOF)
+			while ((c = getc(stdin)) != EOF)
 				cout << c;
+			if (argc == 0)
+				return 0;
 			continue;
 		}
 		if ((fp = fopen(*argv, "r")) == NULL) {
 			cerr << progname << ": " << *argv << " "
 			     << strerror(errno) << "\n";
+			ret = 1;
 			continue;
 		}
 
-		while ((c = fgetc(fp)) != EOF)
-			cout << c;
+		while ((c = getc(fp)) != EOF)
+			cout << static_cast<char>(c);
 
 		fclose(fp);
 	} while (*++argv);
 
-	return 0;
+	return ret;
 }
